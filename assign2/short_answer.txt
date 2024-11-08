@@ -5,7 +5,11 @@ Marriage Pact
 -------------
 
 Q1. It is your choice to use either an ordered or unordered set. In a few sentences, what are some of the tradeoffs between the two? Additionally, please give an example (that has not been shown in lecture) of a valid hash function that could be used to hash student names for an unordered set.
-A1. TODO
+A1. ordered. 
+    性能方面，set通常是对数时间，unrodered_set通常是常数时间。
+    但是，set是有序的，可以提供许多相关操作，如果我们需要有序的数据，那么我们应该使用set(而这次作业看起来是需要的)。如果我们不需要有序的数据，那么我们应该使用unordered_set。
+    hash function: 一个简单的hash function是将字符串中的每个字符相加，然后取模。例如，hash("abc") = ('a' + 'b' + 'c') % 10 = 6。
 
 Q2. Note that we are saving pointers to names in the queue, not names themselves. Why might this be desired in this problem? What happens if the original set where the names are stored goes out of scope and the pointers are referenced?
-A2. TODO
+A2. 可能是为了节约内存。如果保存指针，我们没有使用新的空间存储一个相同的字符串。
+    如果原来的set超出范围，那么指针将指向一个不确定的内存地址，这将导致UB。
