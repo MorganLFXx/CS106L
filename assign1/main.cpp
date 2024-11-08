@@ -52,7 +52,7 @@ struct Course
  * @param filename The name of the file to parse.
  * @param courses  A vector of courses to populate.
  */
-void parse_csv(std::string filename, std::vector<Course> courses)
+void parse_csv(std::string filename, std::vector<Course> &courses)
 {
   std::ifstream fs(filename);
   if (!fs.is_open())
@@ -68,11 +68,7 @@ void parse_csv(std::string filename, std::vector<Course> courses)
   while (std::getline(fs, line))
   {
     auto split_line = split(line, ',');
-    Course course;
-    course.title = split_line[0];
-    course.number_of_units = split_line[1];
-    course.quarter = split_line[2];
-    courses.push_back(course);
+    courses.emplace_back(Course{split_line[0], split_line[1], split_line[2]});
   }
 
   fs.close();
@@ -96,9 +92,34 @@ void parse_csv(std::string filename, std::vector<Course> courses)
  * @param all_courses A vector of all courses gotten by calling `parse_csv`.
  *                    This vector will be modified by removing all offered courses.
  */
-void write_courses_offered(std::vector<Course> all_courses)
+void write_courses_offered(std::vector<Course> &all_courses)
 {
-  /* (STUDENT TODO) Your code goes here... */
+  std::ofstream fs(COURSES_OFFERED_PATH);
+  if (!fs.is_open())
+  {
+    std::cerr << "Error opening file: " << COURSES_OFFERED_PATH << std::endl;
+    return;
+  }
+  std::cout << all_courses.begin()->title << all_courses.begin()->number_of_units << all_courses.begin()->quarter << std::endl;
+
+  fs << "Title,Number of Units,Quarter" << std::endl;
+
+  int i = 0;
+  std::vector<int> to_delete;
+
+  for (auto it = all_courses.begin(); it != all_courses.end(); ++it, ++i)
+  {
+    if (it->quarter != "null")
+    {
+      fs << it->title << "," << it->number_of_units << "," << it->quarter << std::endl;
+      to_delete.push_back(i);
+    }
+  }
+  for (auto it = to_delete.rbegin(); it != to_delete.rend(); ++it)
+  {
+    all_courses.erase(all_courses.begin() + *it);
+  }
+  fs.close();
 }
 
 /**
@@ -114,9 +135,23 @@ void write_courses_offered(std::vector<Course> all_courses)
  *
  * @param unlisted_courses A vector of courses that are not offered.
  */
-void write_courses_not_offered(std::vector<Course> unlisted_courses)
+void write_courses_not_offered(std::vector<Course> &unlisted_courses)
 {
-  /* (STUDENT TODO) Your code goes here... */
+  std::ofstream fs(COURSES_NOT_OFFERED_PATH);
+  if (!fs.is_open())
+  {
+    std::cerr << "Error opening file: " << COURSES_OFFERED_PATH << std::endl;
+    return;
+  }
+  std::cout << unlisted_courses.begin()->title << unlisted_courses.begin()->number_of_units << unlisted_courses.begin()->quarter << std::endl;
+
+  fs << "Title,Number of Units,Quarter" << std::endl;
+
+  for (auto it = unlisted_courses.begin(); it != unlisted_courses.end(); ++it)
+  {
+    fs << it->title << "," << it->number_of_units << "," << it->quarter << std::endl;
+  }
+  fs.close();
 }
 
 int main()
@@ -135,3 +170,11 @@ int main()
 
   return run_autograder();
 }
+
+/* 写在最后(本次Assignment的学会的内容)
+ * 1. 基本的文件流的读写
+ * 2. 通过在调用函数时传入引用来修改函数外的变量，保证变量的生命周期在同个作用域
+ * 3. 在vector中删除元素时，要注意删除的顺序
+ * ---分割比较不重要的部分---
+ * 4. 学会了使用emplace_back()直接构造一个对象并添加到vector中
+ */
