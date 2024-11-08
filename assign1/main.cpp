@@ -27,7 +27,7 @@ const std::string COURSES_NOT_OFFERED_PATH = "student_output/courses_not_offered
 struct Course
 {
   std::string title;
-  int number_of_units;
+  std::string number_of_units;
   std::string quarter;
 };
 
