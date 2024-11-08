@@ -54,7 +54,28 @@ struct Course
  */
 void parse_csv(std::string filename, std::vector<Course> courses)
 {
-  /* (STUDENT TODO) Your code goes here... */
+  std::ifstream fs(filename);
+  if (!fs.is_open())
+  {
+    std::cerr << "Error opening file: " << filename << std::endl;
+    return;
+  }
+
+  std::string first_line;
+  std::getline(fs, first_line); // Ignore the first line
+
+  std::string line;
+  while (std::getline(fs, line))
+  {
+    auto split_line = split(line, ',');
+    Course course;
+    course.title = split_line[0];
+    course.number_of_units = split_line[1];
+    course.quarter = split_line[2];
+    courses.push_back(course);
+  }
+
+  fs.close();
 }
 
 /**
